@@ -1,8 +1,9 @@
 import { remultExpress } from "remult/remult-express";
-import { Task } from "../shared/task";
+import { Hotel } from "../shared/hotel";
 
 export const api = remultExpress(
     {
-        entities: [Task]
+        entities: [Hotel],
+        admin: true
     }
 );

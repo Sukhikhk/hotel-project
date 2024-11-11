@@ -8,5 +8,5 @@
       "path": "./tsconfig.app.json"
     }
   ],
-  "compilerOptions":{"experimentalDecorators":true}
+  "compilerOptions":{"experimentalDecorators":true, "emitDecoratorMetadata": true}
 }

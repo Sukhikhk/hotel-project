@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="bigger:flex flex-md-row flex-sm-column justify-content-between mb-4 mt-3">
-      <div class="smaller:pr-[100px]">
+      <div class="bigger:pr-[100px]">
         <div class="flex justify-between items-center">
           <div>
             <div class="flex gap-2 items-center mt-5">
@@ -22,7 +22,10 @@
             <h1>{{ hotelData.name }}</h1>
           </div>
           <div>
-            <PriceComponent :rooms="hotelData.rooms" />
+            <PriceComponent
+              :rooms="hotelData.rooms"
+              :externalLinks="hotelData.externalLinks"
+            />
           </div>
         </div>
         <span>{{ hotelData.full_address }}</span>
@@ -66,7 +69,7 @@
         <h3>Rating</h3>
         <div class="flex gap-2 items-center">
           <div
-            class="text-white text-[18px] leading-[27px] font-[700] bg-[#0064d3] rounded-[5px] h-[42px] w-[42px] flex items-center justify-center"
+            class="text-white text-[18px] leading-[27px] font-[700] bg-primary rounded-[5px] h-[42px] w-[42px] flex items-center justify-center"
           >
             {{ hotelReviews.hotels[0].score }}
           </div>
@@ -77,7 +80,7 @@
         </div>
         <div class="block bigger:block smaller:grid grid-cols-2 gap-x-4">
           <div v-for="breakdownKey in Object.keys(breakdownDict)">
-            <h6>{{ breakdownDict[breakdownKey] }}</h6>
+            <h6>{{ breakdownDict[breakdownKey as keyof typeof breakdownDict] }}</h6>
             <div class="flex gap-2 items-center">
               <div class="w-full h-[12px] bg-[#f8f8f8] rounded-[3px] overflow-hidden">
                 <div
@@ -96,70 +99,8 @@
             </div>
           </div>
         </div>
-        <div class="mx-[8px] my-[12px] border rounded-[8px] p-[20px]">
-          <div class="flex items-center gap-2">
-            <svg
-              data-v-95fbb59c=""
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 -2 24 22"
-              fill="none"
-            >
-              <path
-                data-v-95fbb59c=""
-                d="M19.6515 19.4054C20.2043 19.2902 20.5336 18.7117 20.2589 18.2183C19.6533 17.1307 18.6993 16.1749 17.4788 15.4465C15.907 14.5085 13.9812 14 12 14C10.0188 14 8.09292 14.5085 6.52112 15.4465C5.30069 16.1749 4.34666 17.1307 3.74108 18.2183C3.46638 18.7117 3.79562 19.2902 4.34843 19.4054C9.39524 20.4572 14.6047 20.4572 19.6515 19.4054Z"
-                fill="#ADAEC6"
-              ></path>
-              <circle data-v-95fbb59c="" cx="12" cy="8" r="5" fill="#ADAEC6"></circle>
-            </svg>
-            <span class="text-[14px]">{{
-              hotelReviews.hotels[0].reviews[reviewIndex].reviewer.name
-            }}</span>
-          </div>
-          <p class="text-[14px]" v-if="hotelReviews.hotels[0].reviews[reviewIndex]">
-            Rated {{ hotelReviews.hotels[0].reviews[reviewIndex].score }}/10
-          </p>
-          <p
-            class="text-[14px]"
-            v-if="hotelReviews.hotels[0].reviews[reviewIndex].positive"
-          >
-            {{ hotelReviews.hotels[0].reviews[reviewIndex].positive }}
-          </p>
-          <p
-            class="text-[14px]"
-            v-if="hotelReviews.hotels[0].reviews[reviewIndex].negative"
-          >
-            {{ hotelReviews.hotels[0].reviews[reviewIndex].negative }}
-          </p>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="mx-[20px] my-[8px]">See all reviews</span>
-          <div class="flex items-center mx-[20px] my-[8px] gap-2">
-            <button
-              @click="reviewIndex--"
-              :disabled="reviewIndex === 0"
-              :class="
-                'text-[#0064d3] leading-none text-[25px] font-bold border rounded-[8px] w-[28px] h-[28px] flex items-center justify-center ' +
-                (reviewIndex === 0 ? 'text-gray-500 bg-gray-100' : '')
-              "
-            >
-              {{ "<" }}
-            </button>
-            <button
-              @click="reviewIndex++"
-              :disabled="reviewIndex === hotelReviews.hotels[0].reviews.length - 1"
-              :class="
-                'text-[#0064d3] leading-none text-[25px] font-bold border rounded-[8px] w-[28px] h-[28px] flex items-center justify-center ' +
-                (reviewIndex === hotelReviews.hotels[0].reviews.length - 1
-                  ? 'text-gray-500 bg-gray-100'
-                  : '')
-              "
-            >
-              {{ ">" }}
-            </button>
-          </div>
-        </div>
+
+        <ReviewsComponent :hotelReviews="hotelReviews.hotels[0].reviews" />
       </div>
     </div>
   </div>
@@ -167,6 +108,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import PropertyDescription from "./PropertyDescription.vue";
+import OtherFacilities from "./OtherFacilities.vue";
+import Map from "./Map.vue";
+import PriceComponent from "./PriceComponent.vue";
+import { text } from "stream/consumers";
+import ReviewsComponent from "./ReviewsComponent.vue";
 
 const breakdownDict = {
   facilities: "Amenities",
@@ -184,8 +131,6 @@ const { hotelData, descriptionList, hotelReviews } = defineProps<{
   hotelReviews: any;
 }>();
 
-const reviewIndex = ref(0);
-
 function convertTo12HourFormat(timeStr: string) {
   // Split the time string into hours, minutes, and seconds
   const [hour, minute] = timeStr.split(":").map(Number);
@@ -200,4 +145,13 @@ function convertTo12HourFormat(timeStr: string) {
 onMounted(() => {});
 </script>
 
-<style></style>
+<style>
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+</style>

@@ -1,19 +1,11 @@
+import { remult, withRemult } from 'remult';
+import { Hotel } from '../shared/hotel';
+
 export   async function fetchHotelData(req:any, res:any) {
     const hotelId = req.params.id;
 
-    const today = new Date().toISOString().split('T')[0];
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0]; // Add 24 hours for tomorrow
-  
-    const {
-      check_in = today,
-      check_out = tomorrow,
-      rooms = 1,
-      currency = 'USD',
-      room0_adults = 2,
-      room0_children = 0
-    } = req.query;
-
-    const url = `https://www.mobytrip.com/apis/hotels/${hotelId}/?check_in=${check_in}&check_out=${check_out}&rooms=${rooms}&currency=${currency}&room0_adults=${room0_adults}&room0_children=${room0_children}`;
+    const queryParams = new URLSearchParams(req.query).toString();
+    const url = `https://www.mobytrip.com/apis/hotels/${hotelId}/?${queryParams}`;
   
     try {
       const response = await fetch(url);
@@ -22,7 +14,20 @@ export   async function fetchHotelData(req:any, res:any) {
       }
       const data = await response.json();
       res.json(data);
-    } catch (error) {
+
+
+      await withRemult(async () => {
+        const hotelRepo = remult.repo(Hotel);
+        if (await hotelRepo.findId(data.code)) {
+        const hotelRecord = await hotelRepo.update(data.code, data); 
+        }
+        else {
+          const hotelRecord = await hotelRepo.insert(data);
+        }
+      });
+
+
+    } catch (error:any) {
       console.error("Error fetching hotel data:", error);
       res.status(500).json({ error: error.message });
     }

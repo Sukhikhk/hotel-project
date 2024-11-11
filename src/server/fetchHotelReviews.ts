@@ -12,7 +12,7 @@ https://www.mobytrip.com/apis/reviews/${hotelId}`;
       }
       const data = await response.json();
       res.json(data);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching hotel data:", error);
       res.status(500).json({ error: error.message });
     }

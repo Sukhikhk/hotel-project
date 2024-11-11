@@ -5,7 +5,7 @@
     <div class="flex flex-col gap-[25px]">
       <div v-for="group in uniqueGroups" :key="group" class="flex flex-col gap-[15px]">
         <h6>{{ group }}</h6>
-        <ul class="list-disc marker:text-[12px]">
+        <ul class="list-disc marker:text-[12px] grid-cols-1 smaller:grid-cols-2">
           <li
             v-for="facility in facilitiesList.filter(
               (facility) => facility.group === group
@@ -20,7 +20,7 @@
       </div>
     </div>
   </div>
-  <button @click="toggleReadMore" class="flex items-center text-[#0064d3] gap-2">
+  <button @click="toggleReadMore" class="flex items-center text-primary gap-2">
     {{ showMore ? "Show Less" : "Show All Facilities And Services" }}
     <svg
       stroke="currentColor"

@@ -1,10 +1,10 @@
 <template>
-  <h1 class="text-[26px] font-[600] pt-[35px]">Choose Your Room</h1>
+  <h1 class="text-[26px] font-[600] pt-[35px] pb-[20px]">Choose Your Room</h1>
   <div class="flex flex-col gap-[20px]">
     <div
       v-for="room in sorted"
       :key="room.code"
-      class="border h-[180px] rounded-[12px]"
+      class="border h-[180px] rounded-[12px] p-[10px]"
       style="display: grid; grid-template-columns: 47% 7% 29% 17%"
     >
       <div>
@@ -17,43 +17,65 @@
         {{ room?.name || room?.roomName }}
       </div>
 
-      <div><img src="/logos/user_solid.svg" class="h-[16px] w-[16px]" /></div>
-      <div />
-      <div>
-        {{
-          room?.baseRate.toLocaleString("en-US", { style: "currency", currency: "USD" })
-        }}
+      <div class="hidden smaller:grid grid-cols-2 h-min overflow-hidden max-h-[160px]">
+        <img
+          v-for="(travel_num, index) in Array.from({ length: nOfTravelers })"
+          :key="index"
+          src="/logos/user_solid.svg"
+          class="h-[16px] w-[16px]"
+        />
+      </div>
+      <div class="smaller:hidden" />
+      <div></div>
+      <div class="flex flex-col justify-between">
+        <div class="flex flex-col text-right">
+          <span class="">
+            {{
+              (findLowestRateForRoom(room)?.baseRate * roomsNum).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0,
+              })
+            }}
+          </span>
+          <span class>
+            {{
+              (findLowestRateForRoom(room)?.chargeAmount * roomsNum).toLocaleString(
+                "en-US",
+                {
+                  style: "currency",
+                  currency: "USD",
+                  maximumFractionDigits: 0,
+                }
+              )
+            }}
+          </span>
+          <span class>
+            {{ nOfNights }} Night{{ nOfNights > 1 ? "s" : "" }} incl. T&F
+          </span>
+        </div>
+        <button class="bg-green-button text-white text-[14px] font-[600] p-2 rounded-md">
+          Reserve
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { rooms, externalLinks } = defineProps<{
+import { getAllRoomOffers, findLowestRateForRoom, sortRooms } from "./utils";
+
+const { rooms, externalLinks, roomsNum, nOfNights, nOfTravelers } = defineProps<{
   rooms: any[];
+  roomsNum: number;
   externalLinks: any[];
+  nOfNights: number;
+  nOfTravelers: number;
 }>();
 
-const allRooms: any[] = [];
+const allRooms = getAllRoomOffers(rooms, externalLinks);
 
-rooms.map((room) => {
-  const updatedRoom = room;
-  updatedRoom.baseRate = room.rates.reduce((min: number, rate: any) => {
-    if (rate.baseRate < min) {
-      return rate.baseRate;
-    }
-    return min;
-  }, room.rates[0].baseRate);
-  allRooms.push(updatedRoom);
-});
-
-Object.keys(externalLinks).forEach((key: string) => {
-  const updatedLink = externalLinks[key];
-  updatedLink.externalProvider = key;
-  allRooms.push(updatedLink);
-});
-
-const sorted = allRooms.sort((a, b) => a.baseRate - b.baseRate);
+const sorted = sortRooms(allRooms);
 </script>
 
 <style></style>

@@ -1,20 +1,26 @@
 <template>
   <div class="flex flex-col text-right items-end">
-    <span class="text-[#158d1d] font-[600] text-[35px] leading-[57px] text-right">{{
-      minPrice.toLocaleString("en-US", { currency: "USD", style: "currency" })
+    <span class="text-green-price font-[600] text-[35px] leading-[57px] text-right">{{
+      Number(lowestRoom.baseRate).toLocaleString(undefined, {
+        style: "currency",
+        currency: "USD",
+      })
     }}</span>
     <span>Per night</span>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+import { getAllRoomOffers, findLowestRoom } from "./utils";
+
+const { rooms, externalLinks } = defineProps<{
   rooms: any[];
+  externalLinks: any;
 }>();
 
-const minPrice = Math.min(
-  ...props.rooms.map((room) => room.rates.map((rate: any) => rate.baseRate)).flat()
-);
+const allRooms = getAllRoomOffers(rooms, externalLinks);
+
+const lowestRoom = findLowestRoom(allRooms);
 </script>
 
 <style></style>

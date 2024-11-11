@@ -9,11 +9,23 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
+    
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server: {proxy: {"/api": "http://localhost:3002"}}
+  server: {proxy: {"/api": "http://localhost:3002"}, 
+    open: true
+ },
+  esbuild: {
+    tsconfigRaw: {
+      compilerOptions: {
+        experimentalDecorators: true,
+      },
+    },
+  },
+
+  
 })

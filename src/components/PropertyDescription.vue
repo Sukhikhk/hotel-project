@@ -4,7 +4,7 @@
     <p v-for="(sentence, index) in displayDescription" :key="index">
       {{ sentence.trim() }}.
     </p>
-    <button @click="toggleReadMore" class="flex items-center text-[#0064d3] gap-2">
+    <button @click="toggleReadMore" class="flex items-center text-primary gap-2">
       {{ showMore ? "Read Less" : "Read More" }}
       <svg
         stroke="currentColor"
